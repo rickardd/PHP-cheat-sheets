@@ -7,6 +7,7 @@ The benefits of using dependency injection
 - Easier to maintain since a change in Author does not have to be updated in Questions
 - Easier to unit test. 
 
+```php
 class Author {
     private $firstName;
     private $lastName;
@@ -48,4 +49,4 @@ $q = new Question( 'my question', $user );
 echo $user->getFirstName();
 echo '<br>';
 echo $q->getAuthor()->getFirstName();
-
+```
