@@ -75,6 +75,21 @@ $fields->addFieldsToTab(
 ```
 
 
+```php
+    private static $db = [
+        'Foo' => 'HTMLText'
+    ];
+    
+    // ..
+
+    $fields->addFieldsToTab(
+        'Root.Foo',
+        HtmlEditorField::create('SetList', false)
+            ->setDescription('Us UL list to style the list')
+            ->setRows(5) // The row height of the box
+    );
+ ```
+
 ### Database tables, collumns and relation ships
 
 ```php
