@@ -89,6 +89,13 @@ $fields->addFieldsToTab(
             ->setRows(5) // The row height of the box
     );
  ```
+ 
+ ***Remove field from tab***
+ 
+ ```php
+ $fields->removeByName('HomePageID'); // or..
+ $fields->removeByName('HomePage');
+ ```
 
 ### Database tables, collumns and relation ships
 
