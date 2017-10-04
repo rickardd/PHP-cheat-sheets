@@ -233,6 +233,120 @@ private static $searchable_fields = array (
 );  
 ```
 
+### Search Form
+```php
+public function index(SS_HTTPRequest $request) {
+
+    /**
+      since  is lazy loaded we can add a lot of filters without executing any querires. 
+      first we get all $properties. Then we can chain tilters. 
+
+      $properties = Property::get();
+      $properties->filter(['...filter...']);
+      $properties->filter(['...foo filter...']);
+      $properties->filter(['...bar filter...']);
+
+      first when the $Results is called from e.g .ss template the query will be executed. 
+
+      return array (
+        'Results' => $properties
+      );
+    */
+
+
+    $properties = Property::get();
+
+    // wraps the $properties:DataList with a :PaginatedList to allow pagination. 
+    $paginatedProperties = PaginatedList::create( $properties, $request )
+      ->setPageLength(15);
+
+
+    if($search = $request->getVar('Keywords')) {
+        $properties = $properties->filter(array(
+            'Title:PartialMatch' => $search             
+        ));
+    }
+
+    if($arrival = $request->getVar('ArrivalDate')) {
+        $arrivalStamp = strtotime($arrival);                        
+        $nightAdder = '+'.$request->getVar('Nights').' days';
+        $startDate = date('Y-m-d', $arrivalStamp);
+        $endDate = date('Y-m-d', strtotime($nightAdder, $arrivalStamp));
+
+        $properties = $properties->filter(array(
+            'AvailableStart:GreaterThanOrEqual' => $startDate,
+            'AvailableEnd:LessThanOrEqual' => $endDate
+        ));
+
+    }
+
+    if($bedrooms = $request->getVar('Bedrooms')) {
+        $properties = $properties->filter(array(
+            'Bedrooms:GreaterThanOrEqual' => $bedrooms
+        ));
+    }
+
+    return array (
+        'Results' => $paginatedProperties
+    );
+  }
+
+
+  public function PropertySearchForm() {
+        $nights = array ();
+        foreach(range(1,14) as $i) {
+            $nights[$i] = "$i night" . (($i > 1) ? 's' : '');
+        }
+        $prices = array ();
+        foreach(range(100, 1000, 50) as $i) {
+            $prices[$i] = '$'.$i;
+        }
+
+        $form = Form::create(
+            $this,
+            'PropertySearchForm',
+            FieldList::create(
+                TextField::create('Keywords')
+                    ->setAttribute('placeholder', 'City, State, Country, etc...')
+                    ->addExtraClass('form-control'),
+                TextField::create('ArrivalDate','Arrive on...')             
+                    ->setAttribute('data-datepicker', true)
+                    ->setAttribute('data-date-format', 'DD-MM-YYYY')
+                    ->addExtraClass('form-control'),
+                DropdownField::create('Nights','Stay for...')                   
+                    ->setSource($nights)
+                    ->addExtraClass('form-control'),
+                DropdownField::create('Bedrooms')                   
+                    ->setSource(ArrayLib::valuekey(range(1,5)))
+                    ->addExtraClass('form-control'),
+                DropdownField::create('Bathrooms')                  
+                    ->setSource(ArrayLib::valuekey(range(1,5)))
+                    ->addExtraClass('form-control'),
+                DropdownField::create('MinPrice','Min. price')
+                    ->setEmptyString('-- any --')
+                    ->setSource($prices)
+                    ->addExtraClass('form-control'),
+                DropdownField::create('MaxPrice','Max. price')
+                    ->setEmptyString('-- any --')
+                    ->setSource($prices)
+                    ->addExtraClass('form-control')             
+            ),
+            FieldList::create(
+                FormAction::create('doPropertySearch','Search')
+                    ->addExtraClass('btn-lg btn-fullcolor')
+            )
+        );
+
+        $form->setFormMethod('GET') //Since this is a searchform we use GET so it can be shared.
+         ->setFormAction($this->Link())
+         ->disableSecurityToken() // and me disable the securitoken since this link is meant to be used by others e.g sharing. 
+         ->loadDataFrom($this->request->getVars()); // This fills the form with the fitler params in adress bar on page refresh. 
+
+        return $form;
+    }
+```
+
+
 ### Grid field
 
 ```php
@@ -390,7 +504,7 @@ class PropertyAdmin extends ModelAdmin {
 public function index(SS_HTTPRequest $request) {
   
     $shows = ShowPage::get();
-
+    This wraps the :DataList Shows in a PaginatedList: $paginatedShows
     $paginatedShows = PaginatedList::create(
         $shows,
         $request
@@ -401,6 +515,17 @@ public function index(SS_HTTPRequest $request) {
     );
 }
 ```
+
+***Useful template variables. ***
+
+- $Results.MoreThanOnePage // Boolean
+- $Results.NotFirstPage // Boolean
+- $Results.PrevLink // Link to previous page
+- $Results.Pages // List of pages 
+- - $CurrentBool // Boolean, true if current page
+- $Results.PaginationSummary // Use instead of $Results.Pages. This will only show x number and then ... if more pages. 
+- $Results.NotLastPage // Boolean
+- $Results.NextLink // Link
 
 ```html
 
