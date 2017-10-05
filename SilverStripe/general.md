@@ -346,6 +346,26 @@ public function index(SS_HTTPRequest $request) {
     }
 ```
 
+### Ajax
+
+```PHP
+// Controller
+  $data = array (
+      'Results' => $paginatedProperties
+  );
+  
+  // Since $data returns the entire html page and we just wanna update a part of a page. 
+  // Therfore we check if it's an ajax request and then just render that tamplete. 
+  // If it's not an ajax request we'll render the entire page. 
+
+  if($request->isAjax()) {
+      return $this->customise($data)
+                   ->renderWith('PropertySearchResults'); // render just this template
+  }
+  
+  return $data; // renders the entire page. 
+```
+
 
 ### Grid field
 
