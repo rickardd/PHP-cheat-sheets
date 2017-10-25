@@ -97,11 +97,21 @@ $fields->addFieldsToTab(
  $fields->removeByName('HomePage');
  ```
  
- ***Order fields in grid*** needs to be tested
- 
- maybe sort => int has to be implemented as well.
- 
+ ***Order/Sort fields in grid*** needs to be tested
+
 ```php
+// This has to be added to the DataObject
+private static $db = [
+  'Sort' => 'Int',
+];
+```
+
+```php
+
+private static $default_sort = 'Sort ASC';
+
+$fields->removeByName(['Sort', 'SectionID']);
+
 GridField::create(
     'FooterSections',
     'Sections',
@@ -109,6 +119,30 @@ GridField::create(
     GridFieldConfig_RecordEditor::create()
         ->addComponent(new GridFieldOrderableRows('Sort'))
 )
+```
+***Add links in the CMS***
+
+```php
+
+private static $has_one = [
+  'Link' => 'Link',
+];
+
+private static $summary_fields = [
+  'Link.Title' => 'Title',
+];
+
+public function getCMSFields()
+{
+  $fields = parent::getCMSFields();
+
+  $fields->addFieldToTab(
+    'Root.Main',
+    LinkField::create('LinkID', 'Link')
+  );
+
+  return $fields;
+}
 ```
 
 ### Database tables, collumns and relation ships
