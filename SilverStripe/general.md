@@ -96,6 +96,20 @@ $fields->addFieldsToTab(
  $fields->removeByName('HomePageID'); // or..
  $fields->removeByName('HomePage');
  ```
+ 
+ ***Order fields in grid*** needs to be tested
+ 
+ maybe sort => int has to be implemented as well.
+ 
+```php
+GridField::create(
+    'FooterSections',
+    'Sections',
+    $this->owner->FooterSections(),
+    GridFieldConfig_RecordEditor::create()
+        ->addComponent(new GridFieldOrderableRows('Sort'))
+)
+```
 
 ### Database tables, collumns and relation ships
 
