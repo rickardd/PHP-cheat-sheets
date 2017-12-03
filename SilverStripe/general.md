@@ -216,6 +216,21 @@ public function GetBookings() {
 }
 ```
 
+### Add styles to style-dropdown in CMS
+```php
+HtmlEditorConfig::get('cwp')->setOptions([
+    'theme_advanced_blockformats' => 'h2,h3,h4,h5,h6,p',
+    'style_formats' => [
+        [
+            'title' => 'Link - Arrow',
+            'selector' => 'a',
+            'inline' => 'a',
+            'classes' => 'link link--chevron',
+        ],
+    ],
+]);
+```
+
 ### Form
 
 
