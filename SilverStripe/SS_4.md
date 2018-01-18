@@ -112,6 +112,8 @@ SilverStripe\Control\Director:
 ```
 
 ```php
+
+// mysite/code/controllers/StyleguideController.php
 <?php
 
 use SilverStripe\CMS\Controllers\ContentController;
