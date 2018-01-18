@@ -90,9 +90,47 @@ class FooterLink extends DataObject
     }
 }
 
+## Setting up KSS styleguide
+
+```yml
+# mysite/_config/routes.yml
+---
+Name: mysiteroutes
+After: framework/routes#coreroutes
+---
+
+---
+Only:
+  environment: 'dev'
+---
+
+SilverStripe\Control\Director:
+  rules:
+    'styleguide/$Action': 'StyleguideController'
+```
+
+```php
+<?php
+
+use SilverStripe\CMS\Controllers\ContentController;
+use SilverStripe\Control\HTTPRequest;
+
+class StyleguideController extends ContentController
+{
+    public function index(HTTPRequest $request)
+    {
+        $page = $request->param('Action');
+
+        $this->renderStyleguide(($page) ? $page . '.html' : 'index.html');
+    }
+
+    private function renderStyleguide($page)
+    {
+        echo file_get_contents('themes/default/styleguide/' . $page);
+    }
+}
 
 
-
-   
+```
     
 
