@@ -90,6 +90,8 @@ class FooterLink extends DataObject
     }
 }
 
+```
+
 ## Setting up KSS styleguide
 
 ```yml
